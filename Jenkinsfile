@@ -129,7 +129,7 @@ def configureOpenCvBuild(generator, srcDir, buildDir, installPrefix, prefixPath,
         bat "mkdir ${buildDir}"
     }
     dir(buildDir) {
-        bat "cmake "${srcDir}" -G "${generator}" -DEIGEN3_INCLUDE_DIR="${eigenDir}" -DCMAKE_INSTALL_PREFIX=${installPrefix} -DCMAKE_PREFIX_PATH=${prefixPath} " +
+        bat "cmake \"${srcDir}\" -G \"${generator}\" -DEIGEN3_INCLUDE_DIR=\"${eigenDir}\" -DCMAKE_INSTALL_PREFIX=${installPrefix} -DCMAKE_PREFIX_PATH=${prefixPath} " +
         "-DBUILD_PERF_TESTS=OFF " +
         "-DBUILD_opencv_apps=OFF " +
         "-DBUILD_opencv_contrib=OFF " +
