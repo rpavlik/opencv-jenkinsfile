@@ -6,7 +6,7 @@ properties([[$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 
                                                                         numToKeepStr: '50',
                                                                         artifactNumToKeepStr: '20']]])
 */
-def branch = (currentBuild.displayName.contains('3') ? 'master' : '2.4') // 2.4 or master
+def branch = env.branch //(currentBuild.displayName.contains('3') ? 'master' : '2.4') // 2.4 or master
 
 @NonCPS
 def getTagPattern(br) {
