@@ -108,7 +108,7 @@ def buildOpenCv(bits, configs, vsVer = '14') {
     def buildDir = "build-${bits}"
     def srcDir = "${WORKSPACE}/latest-tag"
 
-    stage "Configuring VS ${vsVer} ${bits}-bit build" {
+    stage("Configuring VS ${vsVer} ${bits}-bit build"){
 
         //windowsRmIfPresent buildDir
         configureOpenCvBuild(generator, srcDir, buildDir, installPrefix, prefixPath, eigen);
@@ -116,7 +116,7 @@ def buildOpenCv(bits, configs, vsVer = '14') {
     for (thisConfig in configs) {
         def config = thisConfig
 
-        stage "Building and installing VS ${vsVer} ${bits}-bit ${config} build" {
+        stage("Building and installing VS ${vsVer} ${bits}-bit ${config} build"){
             bat "cmake --build ${buildDir} --config ${config}"
             bat "cmake --build ${buildDir} --config ${config} --target INSTALL"
         }
