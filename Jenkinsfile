@@ -72,6 +72,8 @@ node('windows') {
     }
     buildOpenCv '32', ['Release', 'Debug'], '14';
     buildOpenCv '64', ['Release', 'Debug'], '14';
+    buildOpenCv '32', ['Release', 'Debug'], '15';
+    buildOpenCv '64', ['Release', 'Debug'], '15';
 
     stage 'Compressing and archiving results' {
         //unstash 'tagname'
@@ -164,6 +166,9 @@ def getVSVersionName(vsVerNum) {
         break
         case '14':
         result += ' 2015'
+        break
+        case '15':
+        result += ' 2017'
         break
     }
     result
