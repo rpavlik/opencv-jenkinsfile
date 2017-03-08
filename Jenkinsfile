@@ -4,7 +4,7 @@
 properties([[$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'LogRotator',
                                                                         numToKeepStr: '50',
                                                                         artifactNumToKeepStr: '20']]])
-def branch = ENV.branch // 2.4 or master
+def branch = env.branch // 2.4 or master
 
 @NonCPS
 def getTagPattern(br) {
