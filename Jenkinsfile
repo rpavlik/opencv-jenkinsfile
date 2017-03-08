@@ -1,10 +1,12 @@
 #!/usr/bin/env groovy
 
 // Only keep the 10 most recent builds.
+/*
 properties([[$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'LogRotator',
                                                                         numToKeepStr: '50',
                                                                         artifactNumToKeepStr: '20']]])
-def branch = env.branch // 2.4 or master
+*/
+def branch = (currentBuild.displayName.contains('3') ? 'master' : '2.4') // 2.4 or master
 
 @NonCPS
 def getTagPattern(br) {
