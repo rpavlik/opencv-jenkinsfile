@@ -1,32 +1,43 @@
-#!/usr/bin/env/groovy
+#!/usr/bin/env groovy
 
 // Only keep the 10 most recent builds.
 properties([[$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'LogRotator',
                                                                         numToKeepStr: '50',
                                                                         artifactNumToKeepStr: '20']]])
+def branch = ENV.branch // 2.4 or master
+
+@NonCPS
+def getTagPattern(br) {
+    if (branch == '2.4') {
+        return '[0-9].[0-9].[0-9].[0-9]'
+    }
+    return '[0-9].[0-9].[0-9]'
+}
+
 String tagname;
 node('linux-build') {
     stage('Getting source and checking tag'){
         checkout changelog: false, poll: false, scm: [
-            $class: 'GitSCM', branches: [[name: '*/2.4']],
+            $class: 'GitSCM', branches: [[name: "*/${branch}"]],
             doGenerateSubmoduleConfigurations: false,
             extensions: [
-                [$class: 'RelativeTargetDirectory', relativeTargetDir: 'branch-2.4'],
+                [$class: 'RelativeTargetDirectory', relativeTargetDir: "branch-${branch}"],
                 [$class: 'CleanCheckout']
             ],
             submoduleCfg: [],
             userRemoteConfigs: [[url: 'https://github.com/itseez/OpenCV.git']]]
 
         // Get the most recent tag on this branch
-        dir('branch-2.4') {
-            sh 'git describe --abbrev=0 > tagname'
+        dir("branch-${branch}") {
+            pattern = getTagPattern(branch)
+            sh "git describe --abbrev=0 --match '${pattern}' > tagname"
             tagname = readFile('tagname').trim();
-            echo "Latest 2.4 tag: ${tagname}"
+            echo "Latest ${branch} tag: ${tagname}"
             stash includes: 'tagname', name: 'tagname'
         }
     }
 
-    stage('Getting the latest 2.4 tagged release'){
+    stage("Getting the latest ${branch} tagged release"){
         echo "That tag name is ${tagname}"
 
         currentBuild.description = "Build of tag ${tagname}"
@@ -48,7 +59,7 @@ node('linux-build') {
 node('windows') {
     //stage 'Retrieving the stashed sources'
     //unstash 'sources'
-    stage('Retrieving latest 2.4 tagged release on build node'){
+    stage("Retrieving latest ${branch} tagged release on build node"){
         checkout scm: [$class: 'GitSCM',
             branches: [[name: "refs/tags/${tagname}"]],
             doGenerateSubmoduleConfigurations: false,
@@ -58,7 +69,7 @@ node('windows') {
                 ],
             submoduleCfg: [],
             userRemoteConfigs: [[url: 'https://github.com/itseez/OpenCV.git']] ]
-            
+
         windowsRmIfPresent 'install'
     }
     stage('Copying dependency artifacts'){
