@@ -1,8 +1,12 @@
-#!groovy
+#!/usr/bin/env/groovy
 
+// Only keep the 10 most recent builds.
+properties([[$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'LogRotator',
+                                                                        numToKeepStr: '50',
+                                                                        artifactNumToKeepStr: '20']]])
 String tagname;
 node('linux-build') {
-    stage 'Getting source and checking tag' {
+    stage('Getting source and checking tag'){
         checkout changelog: false, poll: false, scm: [
             $class: 'GitSCM', branches: [[name: '*/2.4']],
             doGenerateSubmoduleConfigurations: false,
@@ -22,7 +26,7 @@ node('linux-build') {
         }
     }
 
-    stage 'Getting the latest 2.4 tagged release' {
+    stage('Getting the latest 2.4 tagged release'){
         echo "That tag name is ${tagname}"
 
         currentBuild.description = "Build of tag ${tagname}"
@@ -44,7 +48,7 @@ node('linux-build') {
 node('windows') {
     //stage 'Retrieving the stashed sources'
     //unstash 'sources'
-    stage 'Retrieving latest 2.4 tagged release on build node' {
+    stage('Retrieving latest 2.4 tagged release on build node'){
         checkout scm: [$class: 'GitSCM',
             branches: [[name: "refs/tags/${tagname}"]],
             doGenerateSubmoduleConfigurations: false,
@@ -57,7 +61,7 @@ node('windows') {
             
         windowsRmIfPresent 'install'
     }
-    stage 'Copying dependency artifacts' {
+    stage('Copying dependency artifacts'){
 
         windowsRmIfPresent 'deps'
 
@@ -75,7 +79,7 @@ node('windows') {
     buildOpenCv '32', ['Release', 'Debug'], '15';
     buildOpenCv '64', ['Release', 'Debug'], '15';
 
-    stage 'Compressing and archiving results' {
+    stage('Compressing and archiving results'){
         //unstash 'tagname'
         archive 'install/**/*'
 
