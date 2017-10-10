@@ -118,7 +118,7 @@ def buildOpenCv(bits, configs, vsVer = '14') {
     def eigen = "${WORKSPACE}/deps/install/include"
     def installPrefix = "${WORKSPACE}/install"
     def prefixPath = "${WORKSPACE}/deps/install"
-    def buildDir = "build-${bits}"
+    def buildDir = "build-${vsVer}-${bits}"
     def srcDir = "${WORKSPACE}/latest-tag"
 
     stage("Configuring VS ${vsVer} ${bits}-bit build"){
